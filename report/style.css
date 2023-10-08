@@ -21,7 +21,9 @@ body {
   width: 250px;
   z-index: 1001;
   position: fixed;
+  /* Position the popup relative to the viewport */
   transform: translate(-50%, -50%);
+  /* Center the popup precisely */
 
 }
 
@@ -203,6 +205,7 @@ body {
 
 #popupFormContainer {
   display: none;
+  /* Hide the form container by default */
   position: fixed;
   top: 50%;
   left: 50%;
@@ -216,6 +219,7 @@ body {
   z-index: 1002;
 }
 
+/* Styling for the form elements */
 #popupFormContainer p {
   margin: 0 0 10px;
 }

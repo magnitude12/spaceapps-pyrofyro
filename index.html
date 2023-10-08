@@ -1,32 +1,205 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wildfire Tracker</title>
-    <!-- Add Bootstrap CSS link here -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.5.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <title>PyroFyro</title>
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.5.0/mapbox-gl.js'></script>
+    <script
+        src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.2/mapbox-gl-geocoder.min.js"></script>
+
+    <link rel="stylesheet"
+        href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.2/mapbox-gl-geocoder.css"
+        type="text/css" />
+
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.5.0/mapbox-gl.css' rel='stylesheet' />
+    <link rel="stylesheet" href="./style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./style.css">
 </head>
+
 <body>
-    <header class="bg-primary text-white p-4">
-        <h1 class="text-center">Welcome to Wildfire Tracker</h1>
+    <header>
+        <div class="container">
+            <img src="./logo.png" alt="logo" width="400px">
+            <h2 class="caption">Predict, Report, Mitigate</h2>
+        </div>
     </header>
-    <main class="container mt-5 text-center">
-        <div class="row">
-            <div class="col-md-6">
-                <a href="view/index.html" class="btn btn-primary btn-lg btn-block">View Wildfire Data</a>
-            </div>
-            <div class="col-md-6">
-                <a href="report/index.html" class="btn btn-danger btn-lg btn-block">Report Wildfire Data</a>
+
+
+    <div class="project">
+        <div class="reports">
+            <a href="./report/"> <b style="font-size: 32px;">Reports</b></a>
+            <p style="padding: 15px;">The collected data transmitted to authorities responsible for wildfire mitigation
+                to minimize damage</p>
+            <img src="undraw_location_review_d5qn.svg" width="120">
+        </div>
+        <div class="recentwildfires" ;>
+            <a href="./View/"><b style="font-size: 32px;">Recent wildfires</b></a>
+            <p style="padding: 15px;">Observe the most recent wildfires in your vicinity.</p>
+            <img src="undraw_spreadsheet_re_cn18.svg" width="120">
+        </div>
+        <div class="livedata" ;>
+            <a href="./#/"><b style="font-size: 32px;">Live Sensor Data</b></a>
+            <p style="padding: 15px;">See the live sensor data from vulnerable places of Nepal.</p>
+            <img src="./undraw_real_time_sync_re_nky7.svg" width="120">
+        </div>
+        <div class="predicted" ;>
+            <a href="./#/"><b style="font-size: 32px;">Vulnerability Map</b></a>
+            <p style="padding: 15px;">Visualized heatmap of predicted probability. The prediction is given by custom
+                model made and trained by the team.</p>
+            <img src="./undraw_map_dark_re_36sy.svg" width="120">
+        </div>
+    </div>
+    <hr id="bottom">
+    <!--criteria-->
+    <div class="row">
+        <div class="column">
+            <div class="card"><b style="font-size: 32px;">Impact</b>
+                <p>Enhancing public safety through push notifications, enabling communities to
+                    take
+                    action, and boosting general community resilience against wildfires</p>
             </div>
         </div>
-    </main>
-    <footer class="bg-dark text-white text-center p-3 mt-5">
-        <!-- Add footer content here -->
+        <div class="column">
+            <div class="card"><b style="font-size: 32px;">Validity</b>
+                <p>Improves the effectiveness of information by enabling people
+                    to
+                    record, verify, and visualize wildfire incidents.
+
+
+                </p>
+            </div>
+        </div>
+        <div class="column">
+            <div class="card"><b style="font-size: 32px;">Relevance</b>
+                <p>Lush forests and it's biodiversity is vulnerable to
+                    wildfires. This app can be used to prevent and mitigate the damage caused by wildfires.
+                </p>
+            </div>
+        </div>
+
+    </div><br>
+    <hr id="bottom">
+    <!--criteria-->
+
+    <!--form-->
+    <div class="check">
+        <div id="map">
+
+        </div>
+        <div class="form">
+            <h1 class="h1form">Get notified</h1>
+            <h2 class="h2form">For push notifications  when your location is at high risk. <br>
+                Use the cursor to mark the exact location.<h2>
+
+                    <form id="userDetailsCollector">
+                        <label for="name">Name: </label><br>
+                        <input type="text" id="name" name="name" required><br><br>
+
+                        <label for="phone">Phone Number: </label><br>
+                        <input type="tel" id="phone" name="phone" required><br><br>
+
+                        <label for="address">Address: </label><br>
+                        <textarea id="address" name="address" rows="1" cols="20" required></textarea><br><br>
+
+                        <input type="submit" value="Submit" id="saveform">
+                    </form>
+        </div>
+    </div>
+    <footer>
+        <div class="footer">
+            Made for NASA Space Challenge 2023</div>
     </footer>
-    <!-- Add Bootstrap JS script here -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.5.0/dist/js/bootstrap.min.js"></script>
-    <script src="script.js"></script>
+
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-analytics.js";
+        import { getFirestore, doc, setDoc, addDoc, updateDoc, deleteDoc, getDoc, collection } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+        const firebaseConfig = {
+            apiKey: "AIzaSyC0CMPROzVqlYqexvj5ALnIu45eCi9j6S4",
+            authDomain: "spaceapps-challenge-c258c.firebaseapp.com",
+            projectId: "spaceapps-challenge-c258c",
+            storageBucket: "spaceapps-challenge-c258c.appspot.com",
+            messagingSenderId: "527367587642",
+            appId: "1:527367587642:web:22c128d8825c96e5013203",
+            measurementId: "G-JZSWVF96MX"
+        };
+        // -------------
+        mapboxgl.accessToken = 'pk.eyJ1IjoiaDNtcyIsImEiOiJjbGpwdmJ6bmQwMG5wM2V0azJwdXFmZ3B0In0.VcvGpQkVfDhgrBTlU9rs3A'; // public access token
+
+        var map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/satellite-streets-v12',
+            center: [85.3240, 27.7172], // Initial center coordinates
+            zoom: 7 // Initial zoom level
+        });
+        var geocoder = new MapboxGeocoder({
+            accessToken: mapboxgl.accessToken,
+            mapboxgl: mapboxgl,
+            placeholder: 'Search for a location',
+        });
+
+        map.addControl(geocoder);
+
+        map.addControl(new mapboxgl.GeolocateControl({
+            positionOptions: {
+                enableHighAccuracy: true
+            },
+            trackUserLocation: true
+        }));
+
+
+        var coordinates, uname, phone, address;
+        map.on('click', function (e) {
+            coordinates = e.lngLat;
+
+            var marker = new mapboxgl.Marker()
+                .setLngLat(coordinates)
+                .addTo(map);  // Add the marker to the map
+
+            document.getElementById('userDetailsCollector').addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                console.log('Coordinates:', coordinates);
+                console.log('Address:', address);
+                console.log('Name:', uname);
+                console.log('Phone:', phone);
+                marker.remove();
+            });
+        });
+
+        // -------------
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore();
+
+        async function AddDocument_CustomID() {
+            const db = getFirestore();
+            const collectionRef = collection(db, "userdetails");
+
+            uname = document.getElementById('name').value;
+            phone = document.getElementById('phone').value;
+            address = document.getElementById('address').value;
+
+            const docRef = await addDoc(collectionRef, {
+                lat: coordinates.lat,
+                long: coordinates.lng,
+                address: address,
+                phone: phone,
+                uname: uname
+            });
+
+            alert("Data added successfully with ID: " + docRef.id);
+        }
+        var saveform = document.getElementById('saveform');
+        saveform.addEventListener("click", AddDocument_CustomID);
+
+
+        map.resize();
+
+    </script>
 </body>
+
 </html>
