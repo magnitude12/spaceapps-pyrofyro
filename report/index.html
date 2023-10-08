@@ -29,7 +29,7 @@
 
   <div id="infopopup" class="info-popup">
     <div class="popup-content">
-      <!-- <p id="nepaliText">कृपया </p> -->
+      <p id="nepaliText">डढेलो देख्नुभएको स्थानमा क्लिक गर्नुहोस्।</p>
       <p> Please click on the location where you observed Wildfire</p>
       <button id="closePopup">Close</button>
     </div>
@@ -81,7 +81,7 @@
     container: 'map',
     style: 'mapbox://styles/mapbox/satellite-streets-v12',
     center: [85.3240, 27.7172], // Initial center coordinates
-    zoom: 12 // Initial zoom level
+    zoom: 7 // Initial zoom level
   });
   var geocoder = new MapboxGeocoder({
     accessToken: mapboxgl.accessToken,

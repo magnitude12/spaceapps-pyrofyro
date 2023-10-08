@@ -1,111 +1,61 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap');
+
 body {
-    margin: 0;
-    padding: 0;
+  margin: 0;
+  padding: 0;
+  font-family: 'Poppins';
 }
 
 #map {
-    height: 100vh;
-    width: 100%;
-    position: relative;
-    cursor: crosshair !important;
-}
-
-.map-popup {
-    background-color: #fff;
-    overflow: hidden;
-    padding: 10px;
-    border-radius: 4px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-    font-family: Arial, sans-serif;
-    width: 250px;
-    z-index: 1001;
-    position: fixed; /* Position the popup relative to the viewport */
-    transform: translate(-50%, -50%); /* Center the popup precisely */
-
-}
-
-.map-popup label {
-    display: block;
-    margin-bottom: 5px;
-}
-
-.map-popup input[type="text"],
-.map-popup textarea {
-    width: 100%;
-    padding: 5px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-}
-
-.map-popup input[type="submit"] {
-    background-color: #3498db;
-    color: white;
-    padding: 8px 12px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    width: 100%;
-}
-
-.map-popup input[type="submit"]:hover {
-    background-color: #3498db;
-}
-
-#loading {
-  position: fixed;
-  top: 0;
-  left: 0;
+  height: 100vh;
   width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
+  position: relative;
+  cursor: crosshair !important;
 }
 
-#loading.visible {
-  display: flex;
+
+.sidepanel {
+  height: 100vh; 
+  width: 0; 
+  position: absolute; /* Change to "fixed" for consistent positioning on mobile */
+  z-index: 1001;
+  top: 0;
+  right: 0;
+  background-color: white; /* Change to white background */
+  color: black;
+  overflow-x: hidden; 
+  padding-top: 40px; 
+  transition: 0.5s;
+  border-left: 2px solid #ccc;
+  box-shadow: -2px 0 6px rgba(0, 0, 0, 0.2);
+  border-radius:5px;
 }
 
-.typewriter {
-  font-family: Arial, sans-serif;
-  font-size: 24px;
-  color: white;
-  overflow: hidden;
-  white-space: nowrap;
-  border-right: 0.15em solid white; /* Adjust the border style as needed */
-  animation: typing 1.5s steps(40, end), blink-caret 0.75s step-end infinite;
+
+.sidepanel a{
+  text-decoration: none;
+  color: black;
+}
+.sidepanel .closebtn {
+  position: absolute;
+  top: 0;
+  right: 25px;
+  font-size: 36px;
+  margin-left: 50px;
+}
+.sidepanel p,
+.sidepanel h3{
+  margin: 5px;
+  padding: 10px;
+}
+.sidepanel p{
+  border: 2px solid black;
 }
 
-@keyframes typing {
-  from {
-    width: 0;
-  }
-  to {
-    width: 100%;
-  }
-}
 
-@keyframes blink-caret {
-  from, to {
-    border-color: transparent;
-  }
-  50% {
-    border-color: white; /* Change the color as needed */
-  }
+#markers{
+  cursor: pointer;
 }
-
-body {
-  font-family: Arial, sans-serif;
-}
-
-#nepaliText {
-  font-family: 'Preeti', Arial, sans-serif;
-}
-
 
 /* Info Icon */
 .info-icon {
@@ -152,124 +102,49 @@ body {
   cursor: pointer;
 }
 
-/* Style for the zoom buttons */
-#zoomIn {
-  position: fixed;
-  bottom: 65px;
-  right: 24px;
-  color: white;
-  cursor: pointer;
-  z-index: 1000;
-  font-size: 18px;
-  color:black;
-  padding: 5px 10px;
-  background-color: #fff;
-  border: none;
-  border-radius: 4px;
-}
-
-#zoomOut {
-  position: fixed;
-  bottom: 100px;
-  right: 24px;
-  color: white;
-  cursor: pointer;
-  z-index: 1000;
-  font-size: 18px;
-  color:black;
-  padding: 5px 12px;
-  background-color: #fff;
-  border: none;
-  border-radius: 4px;
-}
-
-#zoomIn:hover {
-  background-color: #3498db;
-}
-#zoomOut:hover {
-  background-color: #3498db;
-}
-
-/*Form*/
-
-/* Styling for the form popup container */
-#popupFormContainer {
-  display: none; /* Hide the form container by default */
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: rgba(255, 255, 255);
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-  font-family: Arial, sans-serif;
-  width: 300px;
-  z-index: 1002;
-}
-
-/* Styling for the form elements */
-#popupFormContainer p {
-  margin: 0 0 10px;
-}
-
-#popupFormContainer label {
-  display: block;
-  margin-bottom: 5px;
-}
-
-#popupFormContainer input[type="text"],
-#popupFormContainer textarea,
-#popupFormContainer input[type="file"] {
-  width: 100%;
-  padding: 5px;
-  margin-bottom: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
+/* Responsive Image and Video */
+.responsive-image {
+  max-width: 100%;
+  height: auto;
+  margin:4px;
 }
 
 
-#popupFormContainer hr {
-  margin: 10px 0;
-  border: none;
-  border-top: 1px solid #ccc;
+.map-popup {
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 4px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    font-family: Arial, sans-serif;
+    width: 250px;
+    z-index: 1001;
 }
 
-#popupFormContainer #closeform {
-  background-color: #D7504C;
-  color: white;
-  padding: 8px 12px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  width: 100%;
+.map-popup label {
+    display: block;
+    margin-bottom: 5px;
 }
 
-#popupFormContainer #closeform:hover {
-  background-color: #111111;
-}
-#popupFormContainer #saveform {
-  background-color: #3498db;
-  color: white;
-  padding: 8px 12px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  width: 100%;
+.map-popup input[type="text"],
+.map-popup textarea {
+    width: 100%;
+    padding: 5px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
 }
 
-#popupFormContainer #saveform:hover {
-  background-color: #111111;
+.map-popup input[type="submit"] {
+    background-color: #3498db;
+    color: white;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
 }
 
-/* Styling for the form buttons */
-.popup-form .row {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 10px;
-}
-
-.popup-form .col {
-  flex-basis: 48%;
+.map-popup input[type="submit"]:hover {
+    background-color: #3498db;
 }
