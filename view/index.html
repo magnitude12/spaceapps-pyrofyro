@@ -1,11 +1,219 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <title>Report</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8">
+
+  <script src='https://api.mapbox.com/mapbox-gl-js/v2.5.0/mapbox-gl.js'></script>
+  <script
+    src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.2/mapbox-gl-geocoder.min.js"></script>
+
+  <link rel="stylesheet"
+    href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.2/mapbox-gl-geocoder.css"
+    type="text/css" />
+
+  <link href='https://api.mapbox.com/mapbox-gl-js/v2.5.0/mapbox-gl.css' rel='stylesheet' />
+  <link rel="stylesheet" href="./style.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 </head>
+
 <body>
-    
+  <div id="map">
+  </div>
+
+  <div class="info-icon">
+    <i class="fas fa-info-circle"></i>
+  </div>
+
+  <div id="infopopup" class="info-popup">
+    <div class="popup-content">
+      <!-- <p id="nepaliText">कृपया </p> -->
+      <p> Please click on the location where you observed Wildfire</p>
+      <button id="closePopup">Close</button>
+    </div>
+  </div>
+
+  <div id="popupFormContainer" class="popup-form">
+    <p>Fill in the details:</p>
+    <form id="popupForm">
+      <label for="addr1">Municipality</label>
+      <input type="text" id="addr1" required>
+      <label for="addr2">District</label>
+      <input type="text" id="addr2">
+      <label for="additionalInfo">Additional Information:</label>
+      <textarea id="additionalInfo"></textarea>
+      <label for="image">Image (Optional):</label>
+      <input type="file" id="image" accept="image/*">
+      <label for="video">Video (Optional):</label>
+      <input type="file" id="video" accept="video/*">
+      <hr>
+      <div class="row">
+        <div class="col">
+          <button id="saveform" type="submit" value="Save">Save</button>
+        </div>
+        <div class="col">
+          <button id="closeform" type="button">Cancel</button>
+        </div>
+      </div>
+    </form>
+    <hr>
+  </div>
 </body>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-analytics.js";
+  import { getFirestore, doc, setDoc, addDoc, updateDoc, deleteDoc, getDoc, collection } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+  const firebaseConfig = {
+    apiKey: "",
+    authDomain: "",
+    projectId: "",
+    storageBucket: "",
+    messagingSenderId: "",
+    appId: "",
+    measurementId: ""
+  };
+  // -------------
+  mapboxgl.accessToken = 'pk.eyJ1IjoiaDNtcyIsImEiOiJjbGpwdmJ6bmQwMG5wM2V0azJwdXFmZ3B0In0.VcvGpQkVfDhgrBTlU9rs3A'; // public access token
+
+  var map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/satellite-streets-v12',
+    center: [85.3240, 27.7172], // Initial center coordinates
+    zoom: 12 // Initial zoom level
+  });
+  var geocoder = new MapboxGeocoder({
+    accessToken: mapboxgl.accessToken,
+    mapboxgl: mapboxgl,
+    placeholder: 'Search for a location',
+  });
+
+  map.addControl(geocoder);
+
+  map.addControl(new mapboxgl.GeolocateControl({
+    positionOptions: {
+      enableHighAccuracy: true
+    },
+    trackUserLocation: true
+  }));
+
+  // Add zoom in and zoom out buttons
+  var zoomInButton = document.createElement('button');
+  zoomInButton.id = 'zoomIn';
+  zoomInButton.className = 'zoom-button';
+  zoomInButton.textContent = '+';
+
+  var zoomOutButton = document.createElement('button');
+  zoomOutButton.id = 'zoomOut';
+  zoomOutButton.className = 'zoom-button';
+  zoomOutButton.textContent = '-';
+
+  map.getContainer().appendChild(zoomInButton);
+  map.getContainer().appendChild(zoomOutButton);
+  zoomInButton.addEventListener('click', function () {
+    var currentZoom = map.getZoom();
+    var newZoom = currentZoom + 1;
+    map.setZoom(newZoom);
+  });
+  zoomOutButton.addEventListener('click', function () {
+    var currentZoom = map.getZoom();
+    var newZoom = currentZoom - 1;
+    map.setZoom(newZoom);
+  });
+
+
+  // Add event listener to the info icon
+  var infoIcon = document.querySelector('.info-icon');
+  var infoPopup = document.getElementById('infopopup');
+  var closePopup = document.getElementById('closePopup');
+  var closeForm = document.getElementById('closeform');
+
+  infoIcon.addEventListener('click', function () {
+    infoPopup.style.display = 'flex'; // Show the popup
+  });
+
+  closePopup.addEventListener('click', function () {
+    infoPopup.style.display = 'none'; // Hide the popup
+  });
+
+  closeForm.addEventListener('click', function () {
+    popupFormContainer.style.display = 'none'; // Hide the popup
+    location.reload(); // Reload the page
+  });
+  var coordinates, addr1, addr2, additionalInfo, currentTime;
+  map.on('click', function (e) {
+    coordinates = e.lngLat;
+
+    var marker = new mapboxgl.Marker()
+      .setLngLat(coordinates)
+      .addTo(map);
+
+    popupFormContainer.style.display = 'block';
+
+    document.getElementById('popupForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (imageFile && imageFile.type.startsWith('image')) {
+        if (imageFile.size > 10 * 1024 * 1024) {
+          alert('Image file size should be less than 10 MB.');
+          return;
+        }
+      }
+
+      if (videoFile && videoFile.type.startsWith('video')) {
+        if (videoFile.size > 10 * 1024 * 1024) {
+          alert('Video file size should be less than 10 MB.');
+          return;
+        }
+      }
+      console.log('Coordinates:', coordinates);
+      console.log('addr1:', addr1);
+      console.log('addr2:', addr2);
+      console.log('Additional Information:', additionalInfo);
+      console.log('Image File:', imageFile);
+      console.log('Video File:', videoFile);
+      console.log('Current Time:', currentTime);
+
+      // Close the popup
+      popupFormContainer.style.display = 'none';
+      marker.remove();
+    });
+  });
+
+  // -------------
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore();
+
+  document.addEventListener("DOMContentLoaded", (event) => {
+
+  // imageFile = document.getElementById('image').files[0];
+  // videoFile = document.getElementById('video').files[0];
+
+  async function AddDocument_CustomID() {
+    const db = getFirestore();
+    const collectionRef = collection(db, "wildfirereports");
+
+    addr1 = document.getElementById('addr1').value;
+    addr2 = document.getElementById('addr2').value;
+    additionalInfo = document.getElementById('additionalInfo').value;
+    currentTime = new Date().toISOString();
+
+    const docRef = await addDoc(collectionRef, {
+      lat: coordinates.lat,
+      long: coordinates.lng,
+      municipality: addr1,
+      district: addr2,
+      additionalInfo: additionalInfo,
+      timestamp: currentTime
+    });
+
+    alert("Data added successfully with ID: " + docRef.id);
+  }
+    var saveform = document.getElementById('saveform');
+    saveform.addEventListener("click", AddDocument_CustomID);
+  });
+
+
+</script>
+
 </html>
