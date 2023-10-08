@@ -23,6 +23,10 @@
   <div id="map">
   </div>
 
+  <a href="/" class="float">
+    <i class="fa fa-arrow-left"></i>
+  </a>
+  
   <div class="info-icon">
     <i class="fas fa-info-circle"></i>
   </div>
@@ -186,29 +190,29 @@
 
   document.addEventListener("DOMContentLoaded", (event) => {
 
-  // imageFile = document.getElementById('image').files[0];
-  // videoFile = document.getElementById('video').files[0];
+    // imageFile = document.getElementById('image').files[0];
+    // videoFile = document.getElementById('video').files[0];
 
-  async function AddDocument_CustomID() {
-    const db = getFirestore();
-    const collectionRef = collection(db, "wildfirereports");
+    async function AddDocument_CustomID() {
+      const db = getFirestore();
+      const collectionRef = collection(db, "wildfirereports");
 
-    addr1 = document.getElementById('addr1').value;
-    addr2 = document.getElementById('addr2').value;
-    additionalInfo = document.getElementById('additionalInfo').value;
-    currentTime = new Date().toISOString();
+      addr1 = document.getElementById('addr1').value;
+      addr2 = document.getElementById('addr2').value;
+      additionalInfo = document.getElementById('additionalInfo').value;
+      currentTime = new Date().toISOString();
 
-    const docRef = await addDoc(collectionRef, {
-      lat: coordinates.lat,
-      long: coordinates.lng,
-      municipality: addr1,
-      district: addr2,
-      additionalInfo: additionalInfo,
-      timestamp: currentTime
-    });
+      const docRef = await addDoc(collectionRef, {
+        lat: coordinates.lat,
+        long: coordinates.lng,
+        municipality: addr1,
+        district: addr2,
+        additionalInfo: additionalInfo,
+        timestamp: currentTime
+      });
 
-    alert("Data added successfully with ID: " + docRef.id);
-  }
+      alert("Data added successfully with ID: " + docRef.id);
+    }
     var saveform = document.getElementById('saveform');
     saveform.addEventListener("click", AddDocument_CustomID);
   });
