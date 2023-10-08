@@ -4,3 +4,37 @@ body {
     margin: 0;
     padding: 0;
 }
+
+header {
+    background-color: #007BFF;
+    color: #fff;
+    text-align: center;
+    padding: 20px;
+}
+
+main {
+    text-align: center;
+    margin-top: 50px;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 18px;
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    margin: 10px;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+footer {
+    text-align: center;
+    margin-top: 50px;
+    padding: 20px;
+    background-color: #333;
+    color: #fff;
+}

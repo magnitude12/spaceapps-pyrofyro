@@ -3,11 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fire Management</title>
+    <title>Wildfire Tracker</title>
+    <!-- Add Bootstrap CSS link here -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.5.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-
 </head>
 <body>
-    <script src = "scripts.js"></script>
+    <header class="bg-primary text-white p-4">
+        <h1 class="text-center">Welcome to Wildfire Tracker</h1>
+    </header>
+    <main class="container mt-5 text-center">
+        <div class="row">
+            <div class="col-md-6">
+                <a href="view/index.html" class="btn btn-primary btn-lg btn-block">View Wildfire Data</a>
+            </div>
+            <div class="col-md-6">
+                <a href="report/index.html" class="btn btn-danger btn-lg btn-block">Report Wildfire Data</a>
+            </div>
+        </div>
+    </main>
+    <footer class="bg-dark text-white text-center p-3 mt-5">
+        <!-- Add footer content here -->
+    </footer>
+    <!-- Add Bootstrap JS script here -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.5.0/dist/js/bootstrap.min.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
