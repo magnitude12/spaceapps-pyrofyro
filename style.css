@@ -186,9 +186,7 @@ input[type=submit]:hover {
 
 /*<!--form-->*/
 footer {
-
-  background-color: #3b1d0b;
-
+  background-color:  rgba(230, 113, 41, 0.8);
 }
 
 .footer {

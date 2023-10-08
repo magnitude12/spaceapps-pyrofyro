@@ -1,0 +1,230 @@
+<html>
+
+<head>
+    <title>View</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.5.0/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.5.0/mapbox-gl.css' rel='stylesheet' />
+    <link rel="stylesheet"
+        href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.2/mapbox-gl-geocoder.css"
+        type="text/css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script
+        src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.2/mapbox-gl-geocoder.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div id="map"></div>
+    <a href="/" class="float">
+        <i class="fa fa-arrow-left"></i>
+    </a>
+    <div class="info-icon">
+        <i class="fas fa-info-circle"></i>
+    </div>
+
+
+
+    <script type="module">
+
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.21.0/firebase-app.js";
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCCS1eYk88vP9yNWVfi8cvGEIZv6yEuP4o",
+            authDomain: "fire-c7ee1.firebaseapp.com",
+            databaseURL: "https://fire-c7ee1-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "fire-c7ee1",
+            storageBucket: "fire-c7ee1.appspot.com",
+            messagingSenderId: "329719881646",
+            appId: "1:329719881646:web:1eac05984e856b1eeb323f"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+
+
+        var database = firebase.database();
+
+        var dataRef1 = database.ref('DHT_11/Humidity');
+        var dataRef2 = database.ref('DHT_11/Temperature');
+
+        dataRef1.on('value', function (getdata1) {
+            var humi = getdata1.val();
+            console.log(humi);
+        })
+
+        dataRef2.on('value', function (getdata2) {
+            var temp = getdata2.val();
+            console.log(temp);
+        })
+        // const app = initializeApp(firebaseConfig);
+
+        // import { getFirestore, doc, setDoc, addDoc, updateDoc, deleteDoc, getDocs, collection } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+
+        mapboxgl.accessToken = 'pk.eyJ1IjoiaDNtcyIsImEiOiJjbGpwdmJ6bmQwMG5wM2V0azJwdXFmZ3B0In0.VcvGpQkVfDhgrBTlU9rs3A'; // public access token
+
+        var map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/satellite-streets-v12',
+            center: [85.3240, 27.7172], // Initial center coordinates
+            zoom: 7 // Initial zoom level
+        });
+
+        var geocoder = new MapboxGeocoder({
+            accessToken: mapboxgl.accessToken,
+            mapboxgl: mapboxgl,
+            placeholder: 'Search for a location',
+        });
+
+        map.addControl(geocoder);
+
+        map.addControl(new mapboxgl.GeolocateControl({
+            positionOptions: {
+                enableHighAccuracy: true
+            },
+            trackUserLocation: true
+        }));
+
+        var infoIcon = document.querySelector('.info-icon');
+        var infoPopup = document.getElementById('infopopup');
+        var closePopup = document.getElementById('closePopup');
+
+        infoIcon.addEventListener('click', function () {
+            infoPopup.style.display = 'flex'; // Show the popup
+        });
+
+        closePopup.addEventListener('click', function () {
+            infoPopup.style.display = 'none'; // Hide the popup
+        });
+
+
+        // ----markers start-----
+        map.on('load', () => {
+            fetch('https://firms.modaps.eosdis.nasa.gov/api/country/csv/33ad71e3dd2a77e41c61d3dbee32331a/MODIS_SP/NPL/2/2020-01-13') // Replace with the path to your CSV file
+                .then(response => response.text())
+                .then(data => {
+                    const rows = data.trim().split('\n');
+
+                    // Parse CSV data
+
+                    // We can use recent data here but in the recent days, there are no fires in Nepal. So we are using the data of 2020-01-13 for the shake of visualization
+                    const features = rows.slice(1).map(row => {
+                        const [country_id, latitude, longitude, brightness, scan, track, acq_date, acq_time, satellite, instrument, confidence, version, bright_t31, frp, daynight, type] = row.split(',');
+                        return {
+                            type: 'Feature',
+                            geometry: {
+                                type: 'Point',
+                                coordinates: [parseFloat(longitude), parseFloat(latitude)],
+                            },
+                            properties: {
+                                country_id,
+                                brightness: parseFloat(brightness),
+                                scan: parseFloat(scan),
+                                track: parseFloat(track),
+                                acq_date,
+                                acq_time: parseInt(acq_time),
+                                satellite,
+                                instrument,
+                                confidence: parseFloat(confidence),
+                                version: parseFloat(version),
+                                bright_t31: parseFloat(bright_t31),
+                                frp: parseFloat(frp),
+                                daynight,
+                                type,
+                            },
+                        };
+                    });
+
+                    const geojson = {
+                        type: 'FeatureCollection',
+                        features,
+                    };
+
+                    map.addSource('fire-data', {
+                        type: 'geojson',
+                        data: geojson,
+                    });
+
+                    map.addLayer({
+                        id: 'fire-markers',
+                        type: 'circle',
+                        source: 'fire-data',
+                        paint: {
+                            'circle-color': 'red',
+                            'circle-radius': 6,
+                        },
+                    });
+
+                    map.on('click', 'fire-markers', (e) => {
+                        const { properties } = e.features[0];
+                        const popup = new mapboxgl.Popup()
+                            .setLngLat(e.lngLat)
+                            .setHTML(`
+                        <h3>Fire Details</h3>
+                        <p>Date: ${properties.acq_date}</p>
+                        <p>Confidence: ${properties.confidence}</p>
+                        <p>Scan: ${properties.scan}</p>
+                        <p>Track: ${properties.track}</p>
+                    `)
+                            .addTo(map);
+                    });
+
+                    map.on('mouseenter', 'fire-markers', () => {
+                        map.getCanvas().style.cursor = 'pointer';
+                    });
+
+                    map.on('mouseleave', 'fire-markers', () => {
+                        map.getCanvas().style.cursor = '';
+                    });
+                })
+                .catch(error => console.error('Error loading data:', error));
+        });
+        // ----markers end-----
+
+        // --------------------
+        const db = getFirestore();
+        var FireData;
+        const markers = [];
+
+        async function GetADocument() {
+            const querySnapshot = await getDocs(collection(db, "wildfirereports"));
+
+            querySnapshot.forEach((doc) => {
+                if (doc.exists()) {
+                    FireData = doc.data();
+                    const latitude = FireData.lat;
+                    const longitude = FireData.long;
+                    const municipality = FireData.municipality;
+                    const district = FireData.district;
+                    const additionalInfo = FireData.additionalInfo;
+                    const timestamp = FireData.timestamp;
+
+                    const marker = new mapboxgl.Marker()
+                        .setLngLat([longitude, latitude])
+                        .setPopup(
+                            new mapboxgl.Popup().setHTML(
+                                `<h3>Municipality: ${municipality}</h3>
+             <p>District: ${district}</p>
+             <p>Additional Info: ${additionalInfo}</p>
+             <p>Timestamp: ${timestamp}</p>`
+                            )
+                        )
+                        .addTo(map);
+
+                    markers.push(marker);
+                } else {
+                    console.log("No such document");
+                }
+            });
+        }
+        GetADocument();
+
+    </script>
+</body>
+
+</html>

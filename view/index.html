@@ -49,39 +49,8 @@
       appId: "1:527367587642:web:22c128d8825c96e5013203",
       measurementId: "G-JZSWVF96MX"
     };
-
-    // For ESP8266 sensor data
-    // const firebaseConfig2 = {
-    //   apiKey: "AIzaSyCCS1eYk88vP9yNWVfi8cvGEIZv6yEuP4o",
-    //   authDomain: "fire-c7ee1.firebaseapp.com",
-    //   databaseURL: "https://fire-c7ee1-default-rtdb.asia-southeast1.firebasedatabase.app",
-    //   projectId: "fire-c7ee1",
-    //   storageBucket: "fire-c7ee1.appspot.com",
-    //   messagingSenderId: "329719881646",
-    //   appId: "1:329719881646:web:1eac05984e856b1eeb323f",
-    // };
-
-    // firebase.initializeApp(firebaseConfig2, 'Secondary');
-
   
     const app = initializeApp(firebaseConfig);
-
-    // For ESP8266 sensor data
-    // var database = firebase.database();
-
-    // var dataRef1 = database.ref('DHT_11/Humidity');
-    // var dataRef2 = database.ref('DHT_11/Temperature');
-
-    // dataRef1.on('value', function (getdata1) {
-    //   var humi = getdata1.val();
-    //   console.log(humi);
-    // })
-
-    // dataRef2.on('value', function (getdata2) {
-    //   var temp = getdata2.val();
-    //   console.log(temp);
-    // })
-
 
     import { getFirestore, doc, setDoc, addDoc, updateDoc, deleteDoc, getDocs, collection } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
@@ -130,6 +99,8 @@
           const rows = data.trim().split('\n');
 
           // Parse CSV data
+          
+          // We can use recent data here but in the recent days, there are no fires in Nepal. So we are using the data of 2020-01-13 for the shake of visualization
           const features = rows.slice(1).map(row => {
             const [country_id, latitude, longitude, brightness, scan, track, acq_date, acq_time, satellite, instrument, confidence, version, bright_t31, frp, daynight, type] = row.split(',');
             return {

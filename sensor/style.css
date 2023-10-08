@@ -1,0 +1,123 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap');
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Poppins';
+}
+
+#map {
+  height: 100vh;
+  width: 100%;
+  position: relative;
+  cursor: crosshair !important;
+}
+
+#markers{
+  cursor: pointer;
+}
+
+/* Info Icon */
+.info-icon {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #3498db;
+  color: white;
+  padding: 10px;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 1000;
+}
+
+/* Info Popup/Modal */
+.info-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.popup-content {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  max-width: 300px;
+}
+
+#closePopup {
+  margin-top: 10px;
+  padding: 5px 10px;
+  background-color: #3498db;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+
+.map-popup {
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 4px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    font-family: Arial, sans-serif;
+    width: 250px;
+    z-index: 1001;
+}
+
+.map-popup label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.map-popup input[type="text"],
+.map-popup textarea {
+    width: 100%;
+    padding: 5px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.map-popup input[type="submit"] {
+    background-color: #3498db;
+    color: white;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+}
+
+.map-popup input[type="submit"]:hover {
+    background-color: #3498db;
+}
+
+
+.float {
+  position: fixed;
+  width: 60px;
+  height: 60px;
+  top: 40px;
+  left: 40px;
+  background-color: #fff;
+  color: #e67129;
+  border-radius: 10px;
+  /* text-align: center; */
+  text-decoration: none;
+  outline: 2px solid #e67129;
+}
+.float i{
+  font-size: 36px;
+  margin-top: 11px;
+  margin-left: 12.5px;
+}
